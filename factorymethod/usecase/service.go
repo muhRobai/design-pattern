@@ -14,10 +14,22 @@ type UseCaseService interface {
 	CreateTransport() error
 }
 
-type Service struct{}
+type Service struct {
+	Ship  *ShipUseCase
+	Truck *TruckUseCase
+}
+
+func NewService() *Service {
+	ship := ShipUseCase{}
+	truck := TruckUseCase{}
+	return &Service{
+		Ship:  &ship,
+		Truck: &truck,
+	}
+}
 
 func (h *Service) ProcessDelivery(ctx context.Context, req *model.DeliveryProcess) error {
-	delivery := GetDeliveryType(req.Type)
+	delivery := h.GetDeliveryType(req.Type)
 	if delivery == nil {
 		log.Println("[error missing delivery]")
 		return errors.New("missing delivery method")
@@ -38,13 +50,17 @@ func (h *Service) ProcessDelivery(ctx context.Context, req *model.DeliveryProces
 	return nil
 }
 
-func GetDeliveryType(key string) UseCaseService {
+func (h *Service) GetDeliveryType(key string) UseCaseService {
 	if constant.GetDelivery(key) == constant.TruckDelivery {
-		return newTruct()
+		if h.Ship != nil {
+			return h.Ship
+		}
 	}
 
 	if constant.GetDelivery(key) == constant.ShipDelivery {
-		return newShip()
+		if h.Truck != nil {
+			return h.Truck
+		}
 	}
 
 	return nil

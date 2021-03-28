@@ -2,27 +2,28 @@ package main
 
 import (
 	"context"
+	"log"
 
 	"github.com/design-pattern/factorymethod/model"
 	"github.com/design-pattern/factorymethod/usecase"
 )
 
 func main() {
-	service := usecase.Service{}
+	srv := usecase.NewService()
 
-	err := service.ProcessDelivery(context.Background(), &model.DeliveryProcess{
+	err := srv.ProcessDelivery(context.Background(), &model.DeliveryProcess{
 		Type: "SHIP",
 	})
 
 	if err != nil {
-		return
+		log.Println(err)
 	}
 
-	err = service.ProcessDelivery(context.Background(), &model.DeliveryProcess{
+	err = srv.ProcessDelivery(context.Background(), &model.DeliveryProcess{
 		Type: "TRUCK",
 	})
 
 	if err != nil {
-		return
+		log.Println(err)
 	}
 }
